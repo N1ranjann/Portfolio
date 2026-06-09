@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feesible — Niranjan</title>
+  <meta name="description"
+    content="Feesible: A production-ready Flutter & Firebase mobile app for tutors and coaches to manage students, attendance, and revenue." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Font pairing: Playfair Display (classic editorial) + Syne (bold futuristic sans) + Space Mono (mono) -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Syne:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #06060a;
+      --surface: #0c0c14;
+      --text: #ece9f4;
+      --muted: #b4afc8;
+      --dim: #4a4560;
+      --purple: #7c5cbf;
+      --purple-lt: #a07de0;
+      --green: #3dd68c;
+      --green-dim: rgba(61, 214, 140, 0.1);
+      --purple-dim: rgba(124, 92, 191, 0.12);
+      --border: #151520;
+      --border-lt: #1e1e2e;
+      --serif: 'Playfair Display', serif;
+      --sans: 'Syne', sans-serif;
+      --mono: 'Space Mono', monospace;
+      --grad: linear-gradient(135deg, #7c5cbf 0%, #3dd68c 100%);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Lenis Smooth Scroll Setup */
+    html.lenis,
+    html.lenis body {
+      height: auto;
+    }
+
+    .lenis.lenis-smooth {
+      scroll-behavior: auto !important;
+    }
+
+    .lenis.lenis-smooth [data-lenis-prevent] {
+      scroll-behavior: contain;
+    }
+
+    .lenis.lenis-stopped {
+      overflow: hidden;
+    }
+
+    .lenis.lenis-smooth iframe {
+      pointer-events: none;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 17px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      cursor: none;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #1c1c2c;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--purple);
+    }
+
+    ::selection {
+      background: rgba(124, 92, 191, 0.3);
+      color: var(--text);
+    }
+
+    /* ─── Custom Cursor ─── */
+    .cursor {
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--green);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.25s ease, height 0.25s ease, background 0.25s ease;
+    }
+
+    .cursor-dot {
+      width: 4px;
+      height: 4px;
+      background: var(--green);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+    }
+
+    /* ─── Navbar ─── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 56px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(6, 6, 10, 0.92);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--dim);
+      transition: color 0.2s;
+    }
+
+    .nav-back:hover {
+      color: var(--green);
+    }
+
+    .nav-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      object-fit: cover;
+    }
+
+    .nav-title {
+      font-family: var(--sans);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-index {
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--dim);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+
+    /* ─── Hero ─── */
+    .hero {
+      padding: 100px 56px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ambient gradient glow */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -120px;
+      right: -120px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(124, 92, 191, 0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: -80px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(61, 214, 140, 0.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 52px;
+    }
+
+    .eyebrow-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--green);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 48px;
+      margin-bottom: 0;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(80px, 11vw, 160px);
+      font-weight: 700;
+      line-height: 0.9;
+      letter-spacing: -5px;
+      color: var(--text);
+    }
+
+    .hero-title .grad-text {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-logo-large {
+      width: 140px;
+      height: 140px;
+      border-radius: 32px;
+      object-fit: cover;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 40px rgba(124, 92, 191, 0.35));
+      transition: filter 0.4s ease, transform 0.4s ease;
+    }
+
+    .hero-logo-large:hover {
+      filter: drop-shadow(0 0 60px rgba(61, 214, 140, 0.45));
+      transform: scale(1.04) rotate(-2deg);
+    }
+
+    .hero-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border);
+      margin-top: 48px;
+    }
+
+    .hero-tagline {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--muted);
+      max-width: 460px;
+      line-height: 1.5;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 40px;
+      flex-shrink: 0;
+    }
+
+    .meta-block {
+      text-align: right;
+    }
+
+    .meta-label {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--dim);
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    /* ─── Overview Strip ─── */
+    .overview-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .strip-item {
+      padding: 36px 40px;
+      border-right: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+
+    .strip-item:last-child {
+      border-right: none;
+    }
+
+    .strip-item:hover {
+      background: var(--purple-dim);
+    }
+
+    .strip-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      width: 0;
+      background: var(--grad);
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .strip-item:hover::after {
+      width: 100%;
+    }
+
+    .strip-label {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--dim);
+      margin-bottom: 10px;
+    }
+
+    .strip-value {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    /* ─── Main Content ─── */
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .content-left {
+      padding: 80px 56px;
+      border-right: 1px solid var(--border);
+    }
+
+    .content-right {
+      padding: 80px 56px;
+    }
+
+    .section-number {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--dim);
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-number::after {
+      content: '';
+      height: 1px;
+      width: 48px;
+      background: var(--border-lt);
+    }
+
+    .section-heading {
+      font-family: var(--serif);
+      font-size: 44px;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      color: var(--text);
+      margin-bottom: 28px;
+    }
+
+    .section-heading .accent-green {
+      color: var(--green);
+      font-style: italic;
+    }
+
+    .section-heading .accent-purple {
+      color: var(--purple-lt);
+      font-style: italic;
+    }
+
+    .section-body {
+      font-family: var(--sans);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.85;
+    }
+
+    .section-body+.section-body {
+      margin-top: 16px;
+    }
+
+    .pull-quote {
+      margin: 36px 0;
+      padding: 28px 32px;
+      border-left: 2px solid var(--purple);
+      background: var(--purple-dim);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .pull-quote p {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .pull-quote p strong {
+      color: var(--text);
+      font-style: normal;
+    }
+
+    /* ─── Tech Stack ─── */
+    .tech-section {
+      padding: 72px 56px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tech-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+
+    .tech-title {
+      font-family: var(--serif);
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      color: var(--text);
+    }
+
+    .tech-count {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .tech-item {
+      background: var(--bg);
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+
+    .tech-item:hover {
+      background: var(--surface);
+    }
+
+    .tech-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 0;
+      background: var(--grad);
+      transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tech-item:hover::before {
+      height: 2px;
+    }
+
+    .tech-category {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--dim);
+      margin-bottom: 10px;
+    }
+
+    .tech-name {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--text);
+    }
+
+    /* ─── Features ─── */
+    .features-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .features-left {
+      padding: 80px 56px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .features-left::before {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: -60px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(61, 214, 140, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .big-number {
+      font-family: var(--serif);
+      font-size: clamp(120px, 16vw, 220px);
+      font-weight: 700;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--border-lt);
+      letter-spacing: -10px;
+      margin-bottom: -12px;
+      user-select: none;
+    }
+
+    .features-right {
+      padding: 80px 56px;
+    }
+
+    .feature-list {
+      list-style: none;
+    }
+
+    .feature-item {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 20px;
+      align-items: start;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border);
+      opacity: 0;
+      transform: translateX(24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .feature-item.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .feature-item:first-child {
+      border-top: 1px solid var(--border);
+    }
+
+    .feature-num {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 1px;
+      padding-top: 2px;
+    }
+
+    .feature-text {
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .feature-text strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ─── Stats row ─── */
+    .stats-section {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-item {
+      padding: 60px 56px;
+      border-right: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-item:last-child {
+      border-right: none;
+    }
+
+    .stat-number {
+      font-family: var(--serif);
+      font-size: 80px;
+      font-weight: 700;
+      letter-spacing: -4px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-number.purple {
+      color: var(--purple-lt);
+    }
+
+    .stat-number.green {
+      color: var(--green);
+    }
+
+    .stat-number.mixed {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-desc {
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--dim);
+    }
+
+    /* ─── CTA Footer ─── */
+    .cta-footer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .cta-left {
+      padding: 80px 56px;
+      border-right: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-left::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(124, 92, 191, 0.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .cta-heading {
+      font-family: var(--serif);
+      font-size: 58px;
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -2.5px;
+      color: var(--text);
+      margin-bottom: 36px;
+      position: relative;
+    }
+
+    .cta-heading .accent-green {
+      color: var(--green);
+      font-style: italic;
+    }
+
+    .cta-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .cta-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border: 1px solid var(--border-lt);
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      transition: all 0.25s;
+    }
+
+    .cta-link:hover {
+      color: var(--text);
+      border-color: var(--purple);
+      background: var(--purple-dim);
+    }
+
+    .cta-link.primary {
+      background: var(--grad);
+      color: #040408;
+      border-color: transparent;
+    }
+
+    .cta-link.primary:hover {
+      opacity: 0.88;
+      background: var(--grad);
+      color: #040408;
+      border-color: transparent;
+    }
+
+    .cta-right {
+      padding: 80px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .footer-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .footer-back {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--dim);
+      letter-spacing: 1px;
+      transition: color 0.2s;
+    }
+
+    .footer-back:hover {
+      color: var(--green);
+    }
+
+    .footer-sig {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-style: italic;
+      color: var(--dim);
+    }
+
+    /* ─── Reveal ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+      nav {
+        padding: 18px 24px;
+      }
+
+      .hero {
+        padding: 60px 24px 0;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-logo-large {
+        width: 90px;
+        height: 90px;
+      }
+
+      .hero-title {
+        font-size: 70px;
+        letter-spacing: -3px;
+      }
+
+      .hero-bottom {
+        flex-direction: column;
+        gap: 24px;
+        padding-bottom: 40px;
+      }
+
+      .hero-meta {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .meta-block {
+        text-align: left;
+      }
+
+      .overview-strip {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .strip-item {
+        padding: 24px;
+      }
+
+      .content,
+      .features-section,
+      .cta-footer,
+      .stats-section {
+        grid-template-columns: 1fr;
+      }
+
+      .content-left,
+      .features-left {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .stat-item {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .content-left,
+      .content-right,
+      .features-left,
+      .features-right,
+      .cta-left,
+      .cta-right,
+      .stat-item {
+        padding: 48px 24px;
+      }
+
+      .tech-section {
+        padding: 48px 24px;
+      }
+
+      .tech-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .cta-left {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .cursor,
+      .cursor-dot {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <a href="index.html" class="nav-back">← Back</a>
+    <div class="nav-logo-wrap">
+      <img src="feesible-logo.png" alt="Feesible logo" class="nav-logo" />
+      <span class="nav-title">Feesible</span>
+    </div>
+    <span class="nav-index">Project 02</span>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-tag">Mobile App</span>
+      </div>
+      <div class="hero-grid">
+        <h1 class="hero-title">Fee<span class="grad-text">si</span>ble</h1>
+        <img src="feesible-logo.png" alt="Feesible App Logo" class="hero-logo-large" />
+      </div>
+      <div class="hero-bottom">
+        <p class="hero-tagline">Empowering tutors, teachers, and coaches to manage students, track attendance, and
+          monitor revenue — with absolute precision.</p>
+        <div class="hero-meta">
+          <div class="meta-block">
+            <p class="meta-label">Platform</p>
+            <p class="meta-value">Flutter · Android</p>
+          </div>
+          <div class="meta-block">
+            <p class="meta-label">Timeline</p>
+            <p class="meta-value">April 2026</p>
+          </div>
+          <div class="meta-block">
+            <p class="meta-label">Grade</p>
+            <p class="meta-value">Production-Ready</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Overview Strip -->
+  <div class="overview-strip reveal">
+    <div class="strip-item">
+      <p class="strip-label">Type</p>
+      <p class="strip-value">Mobile Application</p>
+    </div>
+    <div class="strip-item">
+      <p class="strip-label">Security</p>
+      <p class="strip-value">Highly Secure<br />Firebase Auth</p>
+    </div>
+    <div class="strip-item">
+      <p class="strip-label">Backend</p>
+      <p class="strip-value">Firebase &amp;<br />Cloud Firestore</p>
+    </div>
+    <div class="strip-item">
+      <p class="strip-label">Target Users</p>
+      <p class="strip-value">Tutors, Teachers<br />&amp; Coaches</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-section reveal">
+    <div class="stat-item">
+      <p class="stat-number purple">3-in-1</p>
+      <p class="stat-desc">Roster · Attendance · Revenue</p>
+    </div>
+    <div class="stat-item">
+      <p class="stat-number green">∞</p>
+      <p class="stat-desc">Real-time data sync</p>
+    </div>
+    <div class="stat-item">
+      <p class="stat-number mixed">0</p>
+      <p class="stat-desc">Revenue leaks tolerated</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <div class="content-left reveal">
+      <p class="section-number">01 — Overview</p>
+      <h2 class="section-heading">Built for the <span class="accent-green">independent</span> educator.</h2>
+      <p class="section-body">
+        Feesible is a production-ready, highly secure mobile application built with Flutter and Firebase. It empowers
+        independent tutors, teachers, and coaches to manage student rosters, track attendance, and monitor revenue with
+        absolute precision.
+      </p>
+      <p class="section-body">
+        The application was designed from the ground up to solve a real operational gap: independent educators have no
+        dedicated tooling. They resort to spreadsheets, paper notebooks, and fragmented messaging apps — and inevitably
+        lose track of fees.
+      </p>
+      <div class="pull-quote">
+        <p>"Every missed payment is a missed lesson in <strong>financial clarity</strong>. Feesible closes that gap."
+        </p>
+      </div>
+      <p class="section-body">
+        With real-time Firestore sync, changes propagate instantly across sessions. Student records, attendance history,
+        and payment status are always accurate, always accessible.
+      </p>
+    </div>
+    <div class="content-right reveal">
+      <p class="section-number">02 — Security</p>
+      <h2 class="section-heading">Secure by <span class="accent-purple">design,</span><br />not afterthought.</h2>
+      <p class="section-body">
+        Security is foundational to Feesible, not an afterthought. Firebase Authentication provides industry-standard
+        identity management, ensuring only authorized users can access student data.
+      </p>
+      <p class="section-body">
+        Cloud Firestore security rules enforce strict per-user data isolation at the database layer — even if
+        authentication were bypassed, data from one educator's account is structurally inaccessible to another.
+      </p>
+      <p class="section-body">
+        All data in transit is encrypted via HTTPS. Firebase's infrastructure provides automatic backups, redundancy,
+        and compliance with major data protection standards — giving educators peace of mind without needing to think
+        about infrastructure.
+      </p>
+      <div class="pull-quote">
+        <p>"Student data is <strong>sensitive</strong>. It deserves encryption, isolation, and a system you can trust."
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="tech-section reveal">
+    <div class="tech-header">
+      <h2 class="tech-title">Technology stack</h2>
+    </div>
+    <div class="tech-grid">
+      <div class="tech-item">
+        <p class="tech-category">Language</p>
+        <p class="tech-name">Dart</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-category">Framework</p>
+        <p class="tech-name">Flutter</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-category">Authentication</p>
+        <p class="tech-name">Firebase Auth</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-category">Database</p>
+        <p class="tech-name">Cloud Firestore</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features-section">
+    <div class="features-left reveal">
+      <p class="section-number">03 — Features</p>
+      <h2 class="section-heading">Everything a<br />tutor <span class="accent-green">needs.</span></h2>
+    </div>
+    <div class="features-right">
+      <ul class="feature-list">
+        <li class="feature-item">
+          <span class="feature-num">01</span>
+          <p class="feature-text"><strong>Student Roster Management</strong> — Add, edit, and organise your full student
+            list with profiles, contact details, and session history in one place.</p>
+        </li>
+        <li class="feature-item">
+          <span class="feature-num">02</span>
+          <p class="feature-text"><strong>Attendance Tracking</strong> — Mark and review attendance session by session
+            with a clean, fast interface built for daily use.</p>
+        </li>
+        <li class="feature-item">
+          <span class="feature-num">03</span>
+          <p class="feature-text"><strong>Revenue Monitoring</strong> — Track payments received, outstanding balances,
+            and monthly earnings with precision so nothing slips through.</p>
+        </li>
+        <li class="feature-item">
+          <span class="feature-num">04</span>
+          <p class="feature-text"><strong>Real-Time Sync</strong> — Cloud Firestore keeps your data live across devices.
+            Switch from phone to tablet — everything is instantly up to date.</p>
+        </li>
+        <li class="feature-item">
+          <span class="feature-num">05</span>
+          <p class="feature-text"><strong>Secure Authentication</strong> — Firebase Auth ensures only you can access
+            your data, with email/password and social sign-in options supported.</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CTA Footer -->
+  <div class="cta-footer">
+    <div class="cta-left reveal">
+      <h2 class="cta-heading">Try it on<br /><span class="accent-green">Android.</span></h2>
+      <div class="cta-links">
+        <a href="https://www.mediafire.com/file/x8u6pkgnl6tktj2/app-arm64-v8a-release.apk/file" target="_blank"
+          rel="noopener noreferrer" class="cta-link primary" id="download-apk">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Download APK
+        </a>
+        <a href="https://github.com/N1ranjann/Feesible" target="_blank" rel="noopener noreferrer" class="cta-link">
+          View on GitHub ↗
+        </a>
+        <a href="index.html" class="cta-link">
+          ← All Projects
+        </a>
+      </div>
+      <p style="margin-top: 18px; font-family: var(--sans); font-size: 14px; color: var(--dim); font-weight: 400;">
+        arm64-v8a · Release build · Sideload enabled</p>
+    </div>
+    <div class="cta-right">
+      <div class="footer-meta">
+        <a href="index.html" class="footer-back">← All Projects</a>
+        <span class="footer-sig">Designed &amp; built by Niranjan, 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Scripts -->
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script>
+    // Initialize Lenis Smooth Scroll
+    const lenis = new Lenis();
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          lenis.scrollTo(target);
+        }
+      });
+    });
+
+    // Smooth trailing cursor
+    const cursor = document.getElementById('cursor');
+    const dot = document.getElementById('cursorDot');
+    let cx = 0, cy = 0, tx = 0, ty = 0;
+
+    document.addEventListener('mousemove', e => {
+      tx = e.clientX; ty = e.clientY;
+      dot.style.left = tx + 'px';
+      dot.style.top = ty + 'px';
+    });
+
+    function animateCursor() {
+      cx += (tx - cx) * 0.12;
+      cy += (ty - cy) * 0.12;
+      cursor.style.left = cx + 'px';
+      cursor.style.top = cy + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '40px';
+        cursor.style.height = '40px';
+        cursor.style.background = 'rgba(61,214,140,0.08)';
+        cursor.style.borderColor = 'var(--green)';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '22px';
+        cursor.style.height = '22px';
+        cursor.style.background = 'transparent';
+        cursor.style.borderColor = 'var(--green)';
+      });
+    });
+
+    // Scroll reveal
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.07, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // Staggered feature items
+    const featureIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.querySelectorAll('.feature-item').forEach((item, i) => {
+            setTimeout(() => item.classList.add('active'), i * 90);
+          });
+          featureIO.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.features-right').forEach(el => featureIO.observe(el));
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Niranjan — Portfolio 2026</title>
+  <meta name="description" content="Niranjan's portfolio. Designing and building thoughtful digital experiences with intention." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0e0e0e;
+      --text:     #e8e3da;
+      --muted:    #c8c3bb;
+      --dim:      #555;
+      --gold:     #b8a98a;
+      --border:   #1e1e1e;
+      --border-d: #161616;
+      --border-dd:#1a1a1a;
+      --serif:    'DM Serif Display', serif;
+      --sans:     'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    /* Lenis Smooth Scroll Setup */
+    html.lenis, html.lenis body {
+      height: auto;
+    }
+
+    .lenis.lenis-smooth {
+      scroll-behavior: auto !important;
+    }
+
+    .lenis.lenis-smooth [data-lenis-prevent] {
+      scroll-behavior: contain;
+    }
+
+    .lenis.lenis-stopped {
+      overflow: hidden;
+    }
+
+    .lenis.lenis-smooth iframe {
+      pointer-events: none;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Utilities ─────────────────────────────────────────── */
+    .label {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+    }
+
+    .serif { font-family: var(--serif); }
+
+    a { color: inherit; text-decoration: none; }
+
+    hr { border: none; border-top: 1px solid var(--border); }
+
+    /* ─── Navbar ─────────────────────────────────────────────── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .nav-name {
+      font-family: var(--serif);
+      font-size: 26px;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    nav .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    nav .nav-links a {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover { color: var(--text); }
+
+    .availability {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .availability span {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--gold);
+    }
+
+    /* ─── Resume Button ───────────────────────────────────────── */
+    @keyframes resume-shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    @keyframes resume-entrance {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .resume-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border: 1px solid var(--gold);
+      border-radius: 2px;
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      color: var(--gold);
+      background: transparent;
+      text-decoration: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      animation: resume-entrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+      transition: color 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* Sliding fill layer */
+    .resume-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 0;
+    }
+
+    /* Shimmer layer on top of fill */
+    .resume-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(255,255,255,0.18) 50%,
+        transparent 80%
+      );
+      background-size: 200% auto;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 1;
+    }
+
+    .resume-btn:hover::before { transform: scaleX(1); }
+    .resume-btn:hover::after  {
+      opacity: 1;
+      animation: resume-shimmer 0.75s linear;
+    }
+    .resume-btn:hover { color: var(--bg); border-color: var(--gold); }
+
+    .resume-btn-text, .resume-btn-icon {
+      position: relative;
+      z-index: 2;
+    }
+
+    .resume-btn-icon {
+      font-size: 14px;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .resume-btn:hover .resume-btn-icon { transform: translateY(2px) rotate(6deg); }
+
+    /* ─── Hero ───────────────────────────────────────────────── */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+      padding: 80px 48px 60px;
+      border-bottom: 1px solid var(--border);
+      min-height: 52vh;
+    }
+
+    .hero-left .hero-label {
+      margin-bottom: 28px;
+    }
+
+    .hero-heading {
+      font-family: var(--serif);
+      font-size: 58px;
+      line-height: 1.08;
+      letter-spacing: -1px;
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    .hero-heading em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-right {
+      padding-left: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 28px;
+    }
+
+    .hero-desc {
+      font-size: 14px;
+      color: var(--dim);
+      line-height: 1.7;
+      max-width: 280px;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      border: 1px solid #2a2a2a;
+      border-radius: 2px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      background: transparent;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .cta-btn:hover { color: var(--text); border-color: #3a3a3a; }
+    .cta-btn .arrow { font-size: 16px; }
+
+    /* ─── About ──────────────────────────────────────────────── */
+    .about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .about-left {
+      padding: 64px 48px;
+      border-right: 1px solid var(--border-dd);
+    }
+
+    .about-left .section-label {
+      margin-bottom: 32px;
+    }
+
+    .about-bio {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-style: italic;
+      color: var(--muted);
+      line-height: 1.55;
+      font-weight: 400;
+    }
+
+    .about-bio strong {
+      font-style: normal;
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    .about-bio-witty {
+      font-family: var(--sans);
+      font-size: 15px;
+      color: var(--dim);
+      line-height: 1.7;
+      margin-top: 24px;
+    }
+
+    .about-resume {
+      margin-top: 28px;
+      animation: none;
+    }
+
+    .about-right {
+      padding: 64px 48px;
+    }
+
+    .about-identity {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 40px;
+    }
+
+    .memoji-wrap {
+      width: 116px;
+      height: 116px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #161616;
+    }
+
+    .memoji-wrap video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+    }
+
+    .identity-text .id-name {
+      font-family: var(--serif);
+      font-size: 26px;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .identity-text .id-role {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      margin-top: 4px;
+    }
+
+    .stack-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .stack-table tr {
+      border-bottom: 1px solid var(--border-dd);
+    }
+
+    .stack-table tr:first-child {
+      border-top: 1px solid var(--border-dd);
+    }
+
+    .stack-table td {
+      padding: 11px 0;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    .stack-table .cat {
+      color: var(--text);
+      font-weight: 400;
+      width: 110px;
+      font-family: var(--sans);
+    }
+
+    .stack-table .tools {
+      color: var(--dim);
+      font-family: var(--sans);
+    }
+
+    /* ─── Projects ───────────────────────────────────────────── */
+    .projects {
+      border-bottom: 1px solid var(--border);
+      padding: 64px 48px;
+    }
+
+    .projects-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .projects-header .proj-title {
+      font-family: var(--serif);
+      font-size: 32px;
+      letter-spacing: -1px;
+      font-weight: 400;
+    }
+
+    .projects-header .proj-all {
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--dim);
+      font-weight: 400;
+      transition: color 0.2s;
+    }
+
+    .projects-header .proj-all:hover { color: var(--text); }
+
+    .proj-list { width: 100%; }
+
+    .proj-row {
+      display: grid;
+      grid-template-columns: 60px 1.2fr 2fr 130px;
+      column-gap: 40px;
+      align-items: center;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border-d);
+      transition: background 0.15s;
+      margin: 0 -8px;
+      padding-left: 8px;
+      padding-right: 8px;
+      cursor: pointer;
+    }
+
+    .proj-row:first-child { border-top: 1px solid var(--border-d); }
+    .proj-row:hover { background: #131313; }
+
+    .proj-index {
+      font-family: var(--sans);
+      font-size: 15px;
+      color: #333;
+    }
+
+    .proj-name {
+      font-family: var(--serif);
+      font-size: 22px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .proj-badge {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: var(--gold);
+      color: var(--bg);
+      padding: 3px 8px;
+      border-radius: 2px;
+      margin-left: 12px;
+      vertical-align: middle;
+      line-height: 1;
+    }
+
+    .proj-stack, .proj-year {
+      font-family: var(--sans);
+      font-size: 15px;
+      color: var(--dim);
+    }
+
+    .proj-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border: 1px solid #2a2a2a;
+      border-radius: 2px;
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--gold);
+      background: transparent;
+      text-decoration: none;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+      white-space: nowrap;
+    }
+
+    .proj-live:hover {
+      color: #0e0e0e;
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    /* ─── Design Library ─────────────────────────────────────── */
+    .design {
+      border-bottom: 1px solid var(--border);
+      padding: 64px 48px;
+    }
+
+    .design-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .design-header .des-title {
+      font-family: var(--serif);
+      font-size: 25px;
+      letter-spacing: -1px;
+      font-weight: 400;
+    }
+
+    .design-header .des-sub {
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--dim);
+    }
+
+    .design-grid {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .design-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .design-cell {
+      flex: 0 0 25%;
+      aspect-ratio: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid var(--border-dd);
+      overflow: hidden;
+      scroll-snap-align: start;
+    }
+
+    @media (max-width: 1024px) {
+      .design-cell {
+        flex: 0 0 33.333%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .design-cell {
+        flex: 0 0 50%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .design-cell {
+        flex: 0 0 85%;
+      }
+    }
+
+    .design-cell:nth-child(5n+1) { background: #111; }
+    .design-cell:nth-child(5n+2) { background: #0d0d0d; }
+    .design-cell:nth-child(5n+3) { background: #0f0f0f; }
+    .design-cell:nth-child(5n+4) { background: #0c0c0c; }
+    .design-cell:nth-child(5n+5) { background: #0e0e0e; }
+
+    .design-progress-container {
+      width: 100%;
+      height: 2px;
+      background: var(--border-dd);
+      margin-top: 32px;
+      position: relative;
+    }
+
+    .design-progress-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0%;
+      background: var(--gold);
+      transition: width 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .design-cell svg {
+      position: absolute;
+      opacity: 0.12;
+      width: 60%;
+      height: 60%;
+    }
+
+    /* REPLACE SVG TEXTURES WITH <img> TAGS WHEN ADDING DESIGN IMAGES */
+    .design-cell-meta {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+    }
+
+    .design-cell-meta .cell-cat {
+      font-family: var(--sans);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #666;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .design-cell-meta .cell-name {
+      font-family: var(--serif);
+      font-size: 15px;
+      color: #b8b0a4;
+      font-weight: 400;
+    }
+
+    /* ─── Contact ────────────────────────────────────────────── */
+    .contact {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .contact-left {
+      padding: 64px 48px;
+      border-right: 1px solid var(--border-dd);
+    }
+
+    .contact-left .section-label { margin-bottom: 32px; }
+
+    .contact-heading {
+      font-family: var(--serif);
+      font-size: 44px;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      color: var(--text);
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
+
+    .contact-heading em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .contact-desc {
+      font-size: 14px;
+      color: var(--dim);
+      line-height: 1.7;
+      max-width: 300px;
+      margin-bottom: 28px;
+    }
+
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .contact-email, .contact-phone {
+      display: inline-block;
+      font-family: var(--serif);
+      font-size: 18px;
+      color: var(--gold);
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 2px;
+      transition: opacity 0.2s;
+    }
+
+    .contact-email:hover, .contact-phone:hover { opacity: 0.75; }
+
+    .social-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .social-links a {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      transition: color 0.2s;
+    }
+
+    .social-links a:hover { color: var(--text); }
+
+    .contact-right {
+      padding: 64px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-copy, .footer-intent {
+      font-family: var(--sans);
+      font-size: 13px;
+      color: #2a2a2a;
+    }
+
+    .footer-intent { font-style: italic; }
+
+    /* ─── Premium Polish & Interactive Additions ────────────── */
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e1e1e;
+      border-radius: 4px;
+      border: 2px solid var(--bg);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--gold);
+    }
+
+    /* Selection styling */
+    ::selection {
+      background: rgba(184, 169, 138, 0.25);
+      color: var(--text);
+    }
+
+    /* Custom cursor (desktop only) */
+    .custom-cursor {
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 9999;
+      transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+      mix-blend-mode: difference;
+    }
+    
+    .custom-cursor-dot {
+      width: 4px;
+      height: 4px;
+      background-color: var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 10000;
+    }
+
+    @media (max-width: 768px) {
+      .custom-cursor, .custom-cursor-dot {
+        display: none;
+      }
+    }
+
+    /* Scroll reveal transitions */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Interactive Memoji scaling */
+    .memoji-wrap {
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 0 1px var(--border);
+    }
+    
+    .memoji-wrap:hover {
+      transform: scale(1.06) rotate(1.5deg);
+      box-shadow: 0 12px 32px rgba(184, 169, 138, 0.12), 0 0 0 1px var(--gold);
+    }
+
+    /* Interactive Design Cell (Poster + Mockups) */
+    .design-cell.interactive-design-cell {
+      cursor: ew-resize;
+    }
+
+    .design-image-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .design-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transform: scale(1.05);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .design-img.active {
+      opacity: 1;
+      transform: scale(1);
+      z-index: 2;
+    }
+
+    /* Vignette overlay to keep text and pagination highly readable */
+    .design-cell.interactive-design-cell::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(14, 14, 14, 0.4) 0%, rgba(14, 14, 14, 0) 30%, rgba(14, 14, 14, 0) 70%, rgba(14, 14, 14, 0.85) 100%);
+      z-index: 3;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .design-cell-meta {
+      z-index: 4;
+    }
+
+    /* Segmented indicator bar */
+    .design-pagination {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      gap: 6px;
+      z-index: 4;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .design-cell:hover .design-pagination {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .pagination-bar {
+      flex: 1;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 1px;
+      transition: background-color 0.2s ease;
+    }
+
+    .pagination-bar.active {
+      background: var(--gold);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ NAVBAR ═══════════════════════════════════════════════ -->
+  <nav>
+    <span class="nav-name">Niranjan</span>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="#projects">Work</a>
+        <a href="#design">Design</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ══════════════════════════════════════════════════ -->
+  <section class="hero reveal">
+    <div class="hero-left">
+      <p class="label hero-label">Portfolio — 2026</p>
+      <!-- REPLACE WITH YOUR HEADLINE -->
+      <h1 class="hero-heading">
+        Crafting digital<br>
+        experiences with<br>
+        <em>intention</em> &amp; craft.
+      </h1>
+    </div>
+    <div class="hero-right">
+      <!-- REPLACE WITH YOUR SHORT DESCRIPTION -->
+      <p class="hero-desc">
+        Designer and developer building<br>
+        thoughtful products from first principle.
+      </p>
+      <a href="#projects" class="cta-btn">
+        View selected work <span class="arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══ ABOUT ═════════════════════════════════════════════════ -->
+  <section class="about reveal" id="about">
+    <div class="about-left">
+      <p class="label section-label">01 — About</p>
+      <!-- REPLACE WITH YOUR BIO -->
+      <p class="about-bio">
+        My practice is focused on creating
+        <strong>stable, long-lasting</strong> digital products.
+        By bridging the gap between rigorous design systems and clean engineering,
+        I build software that solves problems without adding noise.
+      </p>
+      <p class="about-bio-witty">
+        My stack runs on React, Node, and coffee dark enough to match my IDE’s background theme.
+        I write clean code because I know the database queries I deploy are the only things standing between me and a confession to my therapist.
+      </p>
+      <a href="niranjan_resume.pdf" target="_blank" rel="noopener noreferrer" class="resume-btn about-resume">
+        <span class="resume-btn-text">Résumé</span>
+        <span class="resume-btn-icon">↓</span>
+      </a>
+    </div>
+    <div class="about-right">
+      <div class="about-identity">
+        <div class="memoji-wrap">
+          <video autoplay loop muted playsinline src="memoji.mov"></video>
+        </div>
+        <div class="identity-text">
+          <!-- ADD YOUR NAME AND ROLE HERE -->
+          <p class="id-name">Niranjan</p>
+          <p class="id-role">Designer &amp; Developer</p>
+        </div>
+      </div>
+      <table class="stack-table">
+        <tr>
+          <td class="cat">Frontend</td>
+          <!-- ADD YOUR FRONTEND TOOLS -->
+          <td class="tools">React, Next.js, TypeScript</td>
+        </tr>
+        <tr>
+          <td class="cat">Backend</td>
+          <!-- ADD YOUR BACKEND TOOLS -->
+          <td class="tools">Node.js, Python, PostgreSQL</td>
+        </tr>
+        <tr>
+          <td class="cat">Design</td>
+          <!-- ADD YOUR DESIGN TOOLS -->
+          <td class="tools">Figma, Framer, Illustrator</td>
+        </tr>
+        <tr>
+          <td class="cat">Currently</td>
+          <!-- ADD WHAT YOU'RE CURRENTLY WORKING ON -->
+          <td class="tools">Open to new projects</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ PROJECTS ══════════════════════════════════════════════ -->
+  <section class="projects reveal" id="projects">
+    <div class="projects-header">
+      <h2 class="proj-title">Selected projects</h2>
+      <!-- ADD YOUR GITHUB URL HERE -->
+      <a href="https://github.com/N1ranjann?tab=repositories" target="_blank" rel="noopener noreferrer" class="proj-all">All on GitHub →</a>
+    </div>
+    <div class="proj-list">
+
+      <!-- PROJECT ROW 1 — Mosaic -->
+      <a href="mosaic.html" class="proj-row">
+        <span class="proj-index">01</span>
+        <span class="proj-name">Mosaic</span>
+        <span class="proj-stack">React · Flask · UWB · PostgreSQL</span>
+        <span class="proj-year">Apr 2026</span>
+      </a>
+
+      <!-- PROJECT ROW 2 — Feesible -->
+      <a href="feesible.html" class="proj-row">
+        <span class="proj-index">02</span>
+        <span class="proj-name">Feesible</span>
+        <span class="proj-stack">Flutter · Firebase · Dart</span>
+        <span class="proj-year">Apr 2026</span>
+      </a>
+
+      <!-- PROJECT ROW 3 — Odyn -->
+      <a href="odyn.html" class="proj-row">
+        <span class="proj-index">03</span>
+        <span class="proj-name">Odyn</span>
+        <span class="proj-stack">HTML · CSS · JavaScript</span>
+        <span class="proj-year">May 2026</span>
+      </a>
+
+      <!-- PROJECT ROW 4 — Logix -->
+      <a href="logix.html" class="proj-row">
+        <span class="proj-index">04</span>
+        <span class="proj-name">Logix</span>
+        <span class="proj-stack">Flask · SQLite · MITRE ATT&amp;CK · Docker</span>
+        <span class="proj-year">Mar 2026</span>
+      </a>
+
+      <!-- PROJECT ROW 5 — BlackBox -->
+      <a href="blackbox.html" class="proj-row">
+        <span class="proj-index">05</span>
+        <span class="proj-name">BlackBox<span class="proj-badge">Homelab</span></span>
+        <span class="proj-stack">Ubuntu Server · Docker · CasaOS · Tailscale · LVM</span>
+        <span class="proj-year">2026 — Ongoing</span>
+      </a>
+
+    </div>
+
+  </section>
+
+  <!-- ═══ DESIGN LIBRARY ════════════════════════════════════════ -->
+  <section class="design reveal" id="design">
+    <div class="design-header">
+      <h2 class="des-title">Design library</h2>
+      <span class="des-sub">Graphic work</span>
+    </div>
+
+    <div class="design-grid">
+
+      <!-- CELL 1: EYEGAZE POSTER & MOCKUPS -->
+      <div class="design-cell interactive-design-cell" id="eyegaze-cell">
+        <div class="design-image-container">
+          <img src="eyegaze_poster.jpg" class="design-img active" alt="Eyegaze Poster">
+          <img src="eyegaze_mockup3.jpeg" class="design-img" alt="Eyegaze Mockup 1">
+          <img src="eyegaze_mockup6.jpeg" class="design-img" alt="Eyegaze Mockup 2">
+        </div>
+        <div class="design-pagination">
+          <span class="pagination-bar active"></span>
+          <span class="pagination-bar"></span>
+          <span class="pagination-bar"></span>
+        </div>
+        <div class="design-cell-meta">
+          <span class="cell-cat">Poster Design</span>
+          <span class="cell-name">Eyegaze</span>
+        </div>
+      </div>
+
+      <!-- CELL 2: POTENT POSTER & MOCKUPS -->
+      <div class="design-cell interactive-design-cell" id="potent-cell">
+        <div class="design-image-container">
+          <img src="purpbg.jpg" class="design-img active" alt="Potent Poster">
+          <img src="potent-mockup1.jpeg" class="design-img" alt="Potent Mockup 1">
+          <img src="potent-mockup2.jpg" class="design-img" alt="Potent Mockup 2">
+        </div>
+        <div class="design-pagination">
+          <span class="pagination-bar active"></span>
+          <span class="pagination-bar"></span>
+          <span class="pagination-bar"></span>
+        </div>
+        <div class="design-cell-meta">
+          <span class="cell-cat">Poster Design</span>
+          <span class="cell-name">Potent</span>
+        </div>
+      </div>
+
+      <!-- CELL 3: JAGUAR POSTER & MOCKUPS -->
+      <div class="design-cell interactive-design-cell" id="jaguar-cell">
+        <div class="design-image-container">
+          <img src="jaguarrr.jpg" class="design-img active" alt="Jaguar Poster">
+          <img src="jaguarrr_mockup8.jpeg" class="design-img" alt="Jaguar Mockup 1">
+          <img src="jaguarrr_mockup9.jpeg" class="design-img" alt="Jaguar Mockup 2">
+        </div>
+        <div class="design-pagination">
+          <span class="pagination-bar active"></span>
+          <span class="pagination-bar"></span>
+          <span class="pagination-bar"></span>
+        </div>
+        <div class="design-cell-meta">
+          <span class="cell-cat">Poster Design</span>
+          <span class="cell-name">Jaguar</span>
+        </div>
+      </div>
+
+      <!-- CELL 4: F40 POSTER & MOCKUPS -->
+      <div class="design-cell interactive-design-cell" id="f40-cell">
+        <div class="design-image-container">
+          <img src="f40.jpg" class="design-img active" alt="F40 Poster">
+          <img src="f40_mockup.jpeg" class="design-img" alt="F40 Mockup 1">
+        </div>
+        <div class="design-pagination">
+          <span class="pagination-bar active"></span>
+          <span class="pagination-bar"></span>
+        </div>
+        <div class="design-cell-meta">
+          <span class="cell-cat">Poster Design</span>
+          <span class="cell-name">F40</span>
+        </div>
+      </div>
+
+      <!-- CELL 5: HIBISCUS POSTER & MOCKUPS -->
+      <div class="design-cell interactive-design-cell" id="hibiscus-cell">
+        <div class="design-image-container">
+          <img src="hibiscuss.jpg" class="design-img active" alt="Hibiscus Poster">
+          <img src="hibiscusmockup.jpg" class="design-img" alt="Hibiscus Mockup 1">
+        </div>
+        <div class="design-pagination">
+          <span class="pagination-bar active"></span>
+          <span class="pagination-bar"></span>
+        </div>
+        <div class="design-cell-meta">
+          <span class="cell-cat">Poster Design</span>
+          <span class="cell-name">Hibiscus</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="design-progress-container">
+      <div class="design-progress-bar"></div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTACT ═══════════════════════════════════════════════ -->
+  <section class="contact reveal" id="contact">
+    <div class="contact-left">
+      <p class="label section-label">04 — Contact</p>
+      <h2 class="contact-heading">
+        Let's make something <em>real.</em>
+      </h2>
+      <!-- REPLACE WITH YOUR CONTACT DESCRIPTION -->
+      <p class="contact-desc">
+        Open to freelance projects, full-time roles, and
+        creative collaborations worth caring about.
+      </p>
+      <!-- ADD YOUR EMAIL & PHONE HERE -->
+      <div class="contact-details">
+        <a href="mailto:remeshniranjan@gmail.com" class="contact-email">remeshniranjan@gmail.com</a>
+        <a href="tel:+919061970617" class="contact-phone">+91 9061970617</a>
+      </div>
+      <div class="social-links">
+        <!-- ADD YOUR SOCIAL LINKS HERE -->
+        <a href="https://github.com/N1ranjann?tab=repositories" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://www.linkedin.com/in/niranjan-remesh-030477277/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </div>
+    </div>
+    <div class="contact-right">
+      <!-- EMPTY UPPER AREA — ADD CONTENT IF NEEDED -->
+      <div class="footer-row">
+        <!-- ADD COPYRIGHT NAME HERE -->
+        <span class="footer-copy">© 2026 Niranjan</span>
+        <span class="footer-intent">Designed with intent</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Custom Interactive Cursor -->
+  <div class="custom-cursor" id="customCursor"></div>
+  <div class="custom-cursor-dot" id="customCursorDot"></div>
+
+  <!-- Interactive Scripts -->
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script>
+    // Initialize Lenis Smooth Scroll
+    const lenis = new Lenis();
+    
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    
+    requestAnimationFrame(raf);
+
+    // Smooth scroll for anchor links using Lenis
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          lenis.scrollTo(target);
+        }
+      });
+    });
+
+    // Custom Cursor logic
+    const cursor = document.getElementById('customCursor');
+    const cursorDot = document.getElementById('customCursorDot');
+    
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+      cursorDot.style.left = e.clientX + 'px';
+      cursorDot.style.top = e.clientY + 'px';
+    });
+
+    document.querySelectorAll('a, button, .proj-row, .design-cell').forEach(item => {
+      item.addEventListener('mouseenter', () => {
+        cursor.style.width = '42px';
+        cursor.style.height = '42px';
+        cursor.style.backgroundColor = 'rgba(184, 169, 138, 0.08)';
+        cursor.style.borderColor = 'var(--gold)';
+      });
+      item.addEventListener('mouseleave', () => {
+        cursor.style.width = '24px';
+        cursor.style.height = '24px';
+        cursor.style.backgroundColor = 'transparent';
+        cursor.style.borderColor = 'var(--gold)';
+      });
+    });
+
+    // Reveal on scroll (Intersection Observer)
+    const revealElements = document.querySelectorAll('.reveal');
+    const observerOptions = {
+      root: null,
+      threshold: 0.05,
+      rootMargin: "0px 0px -50px 0px"
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, observerOptions);
+
+    revealElements.forEach(el => observer.observe(el));
+    
+    // Automatically trigger for elements already in viewport
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const hero = document.querySelector('.hero');
+        if (hero) hero.classList.add('active');
+      }, 100);
+    });
+
+    // Interactive Design Cell Scrubbing
+    document.querySelectorAll('.interactive-design-cell').forEach(cell => {
+      const images = cell.querySelectorAll('.design-img');
+      const bars = cell.querySelectorAll('.pagination-bar');
+      const metaName = cell.querySelector('.cell-name');
+      const defaultName = metaName ? metaName.textContent : '';
+      
+      cell.addEventListener('mousemove', (e) => {
+        const rect = cell.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percentage = Math.max(0, Math.min(1, x / rect.width));
+
+        
+        const numImages = images.length;
+        if (numImages === 0) return;
+        
+        const activeIndex = Math.min(Math.floor(percentage * numImages), numImages - 1);
+        
+        images.forEach((img, idx) => {
+          if (idx === activeIndex) {
+            img.classList.add('active');
+          } else {
+            img.classList.remove('active');
+          }
+        });
+        
+        bars.forEach((bar, idx) => {
+          if (idx === activeIndex) {
+            bar.classList.add('active');
+          } else {
+            bar.classList.remove('active');
+          }
+        });
+
+        if (metaName) {
+          if (activeIndex === 0) {
+            metaName.textContent = defaultName;
+          } else {
+            metaName.textContent = `${defaultName} (Mockup ${activeIndex})`;
+          }
+        }
+      });
+      
+      cell.addEventListener('mouseleave', () => {
+        images.forEach((img, idx) => {
+          if (idx === 0) {
+            img.classList.add('active');
+          } else {
+            img.classList.remove('active');
+          }
+        });
+        
+        bars.forEach((bar, idx) => {
+          if (idx === 0) {
+            bar.classList.add('active');
+          } else {
+            bar.classList.remove('active');
+          }
+        });
+        
+        if (metaName) {
+          metaName.textContent = defaultName;
+        }
+      });
+    });
+
+    // Smooth Horizontal Scroll translation for Design Library (.design-grid)
+    const grid = document.querySelector('.design-grid');
+    const progressBar = document.querySelector('.design-progress-bar');
+    
+    if (grid && progressBar) {
+      let scrollTarget = grid.scrollLeft;
+      let scrollCurrent = grid.scrollLeft;
+      let isAnimating = false;
+      const ease = 0.08;
+
+      grid.addEventListener('wheel', (e) => {
+        const maxScroll = grid.scrollWidth - grid.clientWidth;
+        if (maxScroll <= 0) return;
+
+        const isAtStart = grid.scrollLeft <= 0;
+        const isAtEnd = grid.scrollLeft >= maxScroll - 1;
+
+        // Convert vertical mouse wheel scrolling into horizontal scrolling
+        // Only prevent page scroll if we are actively scrolling horizontally within limits
+        if ((e.deltaY > 0 && !isAtEnd) || (e.deltaY < 0 && !isAtStart)) {
+          e.preventDefault();
+          scrollTarget = Math.max(0, Math.min(maxScroll, scrollTarget + e.deltaY));
+          if (!isAnimating) {
+            isAnimating = true;
+            requestAnimationFrame(updateScroll);
+          }
+        }
+      }, { passive: false });
+
+      function updateScroll() {
+        const maxScroll = grid.scrollWidth - grid.clientWidth;
+        const diff = scrollTarget - scrollCurrent;
+
+        if (Math.abs(diff) > 0.5) {
+          scrollCurrent += diff * ease;
+          grid.scrollLeft = scrollCurrent;
+          updateProgress();
+          requestAnimationFrame(updateScroll);
+        } else {
+          grid.scrollLeft = scrollTarget;
+          scrollCurrent = scrollTarget;
+          updateProgress();
+          isAnimating = false;
+        }
+      }
+
+      function updateProgress() {
+        const maxScroll = grid.scrollWidth - grid.clientWidth;
+        if (maxScroll <= 0) {
+          progressBar.style.width = '100%';
+          return;
+        }
+        const progress = (grid.scrollLeft / maxScroll) * 100;
+        progressBar.style.width = `${progress}%`;
+      }
+
+      grid.addEventListener('scroll', () => {
+        // Sync scroll coordinates on native touch gestures or clicks
+        if (!isAnimating) {
+          scrollCurrent = grid.scrollLeft;
+          scrollTarget = grid.scrollLeft;
+          updateProgress();
+        }
+      });
+
+      // Recalculate on load and resize
+      window.addEventListener('load', updateProgress);
+      window.addEventListener('resize', updateProgress);
+      
+      // Run once immediately
+      updateProgress();
+    }
+  </script>
+</body>
+</html>

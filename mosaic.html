@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mosaic — Niranjan</title>
+  <meta name="description" content="Mosaic: A privacy-first retail analytics platform using Ultra-Wideband telemetry for centimeter-level customer trajectory tracking." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Font pairing: DM Serif Display (editorial punch) + DM Mono (technical precision) + DM Sans (clean body) -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #05080f;
+      --surface:     #080d18;
+      --surface-2:   #0c1220;
+      --text:        #e8edf8;
+      --muted:       #8fa3c0;
+      --dim:         #364a65;
+      --cyan:        #00d4ff;
+      --cyan-lt:     #5ee8ff;
+      --cyan-dim:    rgba(0, 212, 255, 0.1);
+      --cyan-glow:   rgba(0, 212, 255, 0.18);
+      --blue:        #1a5fd4;
+      --blue-dim:    rgba(26, 95, 212, 0.12);
+      --border:      #0d1625;
+      --border-lt:   #162035;
+      --serif:       'DM Serif Display', serif;
+      --mono:        'DM Mono', monospace;
+      --sans:        'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    /* Lenis Smooth Scroll Setup */
+    html.lenis, html.lenis body {
+      height: auto;
+    }
+
+    .lenis.lenis-smooth {
+      scroll-behavior: auto !important;
+    }
+
+    .lenis.lenis-smooth [data-lenis-prevent] {
+      scroll-behavior: contain;
+    }
+
+    .lenis.lenis-stopped {
+      overflow: hidden;
+    }
+
+    .lenis.lenis-smooth iframe {
+      pointer-events: none;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 17px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #162035; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+    ::selection { background: rgba(0,212,255,0.2); color: var(--text); }
+
+    /* ─── Custom Cursor ─── */
+    .cursor {
+      width: 20px; height: 20px;
+      border: 1px solid var(--cyan);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.25s ease, height 0.25s ease, background 0.25s ease;
+    }
+    .cursor-dot {
+      width: 4px; height: 4px;
+      background: var(--cyan);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+    }
+
+    /* ─── Animated grid background ─── */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* UWB Radar ambient pulse */
+    .radar-orb {
+      position: fixed;
+      top: -200px;
+      right: -200px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, rgba(26,95,212,0.04) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: orb-pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes orb-pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.08); }
+    }
+
+    /* ─── Navbar ─── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 56px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(5,8,15,0.9);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--cyan); }
+
+    .nav-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-logo {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 6px rgba(0,212,255,0.3));
+    }
+
+    .nav-title {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      color: var(--cyan);
+    }
+
+    .nav-index {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--dim);
+      letter-spacing: 2px;
+    }
+
+    /* ─── Hero ─── */
+    .hero {
+      padding: 90px 56px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Mosaic tile floating pattern */
+    .hero-tiles {
+      position: absolute;
+      top: 0; right: 0;
+      width: 520px;
+      height: 520px;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .tile {
+      position: absolute;
+      border: 1px solid rgba(0, 212, 255, 0.12);
+      animation: tile-float linear infinite;
+    }
+
+    .tile:nth-child(1)  { width:50px;  height:50px;  top:60px;  right:80px;  animation-duration:18s; opacity:0.6; }
+    .tile:nth-child(2)  { width:30px;  height:30px;  top:120px; right:140px; animation-duration:22s; opacity:0.4; animation-delay:-4s; }
+    .tile:nth-child(3)  { width:80px;  height:80px;  top:40px;  right:200px; animation-duration:15s; opacity:0.3; animation-delay:-8s; }
+    .tile:nth-child(4)  { width:40px;  height:40px;  top:200px; right:60px;  animation-duration:25s; opacity:0.5; animation-delay:-2s; }
+    .tile:nth-child(5)  { width:60px;  height:60px;  top:160px; right:260px; animation-duration:20s; opacity:0.25; animation-delay:-6s; }
+    .tile:nth-child(6)  { width:20px;  height:20px;  top:280px; right:120px; animation-duration:30s; opacity:0.6; animation-delay:-10s; }
+    .tile:nth-child(7)  { width:100px; height:100px; top:300px; right:220px; animation-duration:17s; opacity:0.15; animation-delay:-3s; }
+    .tile:nth-child(8)  { width:25px;  height:25px;  top:240px; right:360px; animation-duration:24s; opacity:0.4; animation-delay:-7s; }
+    .tile:nth-child(9)  { width:45px;  height:45px;  top:380px; right:80px;  animation-duration:19s; opacity:0.3; animation-delay:-12s; }
+    .tile:nth-child(10) { width:35px;  height:35px;  top:420px; right:300px; animation-duration:26s; opacity:0.5; animation-delay:-1s; }
+    .tile.filled { background: rgba(0, 212, 255, 0.04); }
+    .tile.filled-blue { background: rgba(26, 95, 212, 0.06); border-color: rgba(26,95,212,0.15); }
+
+    @keyframes tile-float {
+      0%   { transform: translateY(0px) rotate(0deg); }
+      33%  { transform: translateY(-12px) rotate(2deg); }
+      66%  { transform: translateY(6px) rotate(-1.5deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+
+    .hero-inner { position: relative; z-index: 1; }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 52px;
+    }
+
+    .eyebrow-tag {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    .eyebrow-divider {
+      width: 1px;
+      height: 14px;
+      background: var(--border-lt);
+    }
+
+    .eyebrow-sub {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--dim);
+      letter-spacing: 1.5px;
+    }
+
+    .hero-main {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 48px;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(88px, 13vw, 175px);
+      font-weight: 400;
+      line-height: 0.9;
+      letter-spacing: -4px;
+      color: var(--text);
+    }
+
+    .hero-title .accent { color: var(--cyan); font-style: italic; }
+
+    .hero-logo-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 16px;
+      padding-bottom: 8px;
+    }
+
+    .hero-logo-large {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 30px rgba(0,212,255,0.35)) drop-shadow(0 0 60px rgba(26,95,212,0.2));
+      transition: filter 0.4s ease, transform 0.4s ease;
+    }
+
+    .hero-logo-large:hover {
+      filter: drop-shadow(0 0 50px rgba(0,212,255,0.55)) drop-shadow(0 0 100px rgba(26,95,212,0.3));
+      transform: scale(1.05) rotate(-2deg);
+    }
+
+    .hero-pill {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: 1px solid rgba(0,212,255,0.2);
+      padding: 4px 12px;
+      background: rgba(0,212,255,0.05);
+    }
+
+    .hero-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 44px 0 60px;
+      border-top: 1px solid var(--border);
+      margin-top: 52px;
+    }
+
+    .hero-tagline {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-style: italic;
+      color: var(--muted);
+      max-width: 500px;
+      line-height: 1.5;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 48px;
+      flex-shrink: 0;
+    }
+
+    .meta-block { text-align: right; }
+
+    .meta-label {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      margin-bottom: 5px;
+    }
+
+    .meta-value {
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    /* ─── Overview Strip ─── */
+    .overview-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .strip-item {
+      padding: 36px 40px;
+      border-right: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .strip-item:last-child { border-right: none; }
+    .strip-item:hover { background: var(--cyan-dim); }
+
+    .strip-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 1px;
+      width: 0;
+      background: var(--cyan);
+      transition: width 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+    .strip-item:hover::after { width: 100%; }
+
+    .strip-label {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      margin-bottom: 10px;
+    }
+
+    .strip-value {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    /* ─── UWB Signal Viz Section ─── */
+    .signal-section {
+      padding: 60px 56px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .signal-section::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .signal-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .signal-text-col {}
+
+    .section-tag {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-tag::before {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--cyan);
+    }
+
+    .signal-heading {
+      font-family: var(--serif);
+      font-size: 42px;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .signal-heading em { font-style: italic; color: var(--cyan); }
+
+    .signal-body {
+      font-family: var(--sans);
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.85;
+    }
+
+    .signal-viz-col {
+      position: relative;
+      height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Radar rings animation */
+    .radar-wrap {
+      position: relative;
+      width: 220px;
+      height: 220px;
+    }
+
+    .radar-ring {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(0, 212, 255, 0.15);
+      border-radius: 50%;
+      animation: radar-expand 3.5s ease-out infinite;
+    }
+
+    .radar-ring:nth-child(1) { width: 60px;  height: 60px;  animation-delay: 0s; }
+    .radar-ring:nth-child(2) { width: 110px; height: 110px; animation-delay: 0.5s; }
+    .radar-ring:nth-child(3) { width: 160px; height: 160px; animation-delay: 1s; }
+    .radar-ring:nth-child(4) { width: 210px; height: 210px; animation-delay: 1.5s; }
+
+    @keyframes radar-expand {
+      0%   { opacity: 0.8; transform: translate(-50%, -50%) scale(0.85); }
+      100% { opacity: 0;   transform: translate(-50%, -50%) scale(1.05); }
+    }
+
+    .radar-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px; height: 10px;
+      background: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 16px var(--cyan), 0 0 32px rgba(0,212,255,0.4);
+    }
+
+    /* Data point blips */
+    .blip {
+      position: absolute;
+      width: 6px; height: 6px;
+      background: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--cyan);
+      animation: blip-appear 3.5s ease-out infinite;
+    }
+    .blip:nth-child(5)  { top: 25%; left: 68%; animation-delay: 0.8s; }
+    .blip:nth-child(6)  { top: 70%; left: 30%; animation-delay: 1.4s; background: var(--blue); box-shadow: 0 0 8px var(--blue); }
+    .blip:nth-child(7)  { top: 40%; left: 20%; animation-delay: 2.1s; }
+    .blip:nth-child(8)  { top: 65%; left: 72%; animation-delay: 0.3s; background: rgba(0,212,255,0.6); }
+
+    @keyframes blip-appear {
+      0%,80%  { opacity: 0; transform: scale(0); }
+      85%     { opacity: 1; transform: scale(1.4); }
+      100%    { opacity: 0.8; transform: scale(1); }
+    }
+
+    /* ─── Main Content ─── */
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .content-left {
+      padding: 80px 56px;
+      border-right: 1px solid var(--border);
+    }
+
+    .content-right { padding: 80px 56px; }
+
+    .section-number {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--dim);
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-number::after {
+      content: '';
+      height: 1px;
+      width: 40px;
+      background: var(--border-lt);
+    }
+
+    .section-heading {
+      font-family: var(--serif);
+      font-size: 44px;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      color: var(--text);
+      margin-bottom: 28px;
+    }
+
+    .section-heading em { font-style: italic; color: var(--cyan); }
+
+    .section-body {
+      font-family: var(--sans);
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.85;
+    }
+    .section-body + .section-body { margin-top: 16px; }
+
+    .pull-quote {
+      margin: 36px 0;
+      padding: 26px 28px;
+      border-left: 2px solid var(--cyan);
+      background: var(--cyan-dim);
+    }
+
+    .pull-quote p {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-style: italic;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .pull-quote p strong { color: var(--text); font-style: normal; }
+
+    /* ─── Tech Stack ─── */
+    .tech-section {
+      padding: 72px 56px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tech-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+
+    .tech-title {
+      font-family: var(--serif);
+      font-size: 36px;
+      letter-spacing: -1.5px;
+      color: var(--text);
+    }
+
+    .tech-count {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--dim);
+      letter-spacing: 2px;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .tech-item {
+      background: var(--bg);
+      padding: 30px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+    .tech-item:hover { background: var(--surface); }
+
+    .tech-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 0;
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+      transition: height 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+    .tech-item:hover::before { height: 2px; }
+
+    .tech-category {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      margin-bottom: 10px;
+    }
+
+    .tech-name {
+      font-family: var(--serif);
+      font-size: 22px;
+      color: var(--text);
+    }
+
+    /* ─── Features ─── */
+    .features-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .features-left {
+      padding: 80px 56px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .features-left::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; right: -80px;
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .big-number {
+      font-family: var(--serif);
+      font-size: clamp(120px, 16vw, 220px);
+      font-weight: 400;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--border-lt);
+      letter-spacing: -10px;
+      margin-bottom: -10px;
+      user-select: none;
+    }
+
+    .features-right { padding: 80px 56px; }
+
+    .feature-list { list-style: none; }
+
+    .feature-item {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border);
+      opacity: 0;
+      transform: translateX(24px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .feature-item.active { opacity: 1; transform: translateX(0); }
+    .feature-item:first-child { border-top: 1px solid var(--border); }
+
+    .feature-num {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--cyan);
+      letter-spacing: 1px;
+      padding-top: 2px;
+    }
+
+    .feature-text {
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .feature-text strong { color: var(--text); font-weight: 500; }
+
+    /* ─── KPI stats row ─── */
+    .kpi-section {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kpi-item {
+      padding: 60px 56px;
+      border-right: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-item:last-child { border-right: none; }
+
+    .kpi-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 60%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+
+    .kpi-number {
+      font-family: var(--serif);
+      font-size: 68px;
+      font-weight: 400;
+      letter-spacing: -3px;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .kpi-number.cyan { color: var(--cyan); }
+    .kpi-number.blue { color: #4d9fff; }
+    .kpi-number.grad {
+      background: linear-gradient(135deg, var(--cyan) 0%, #4d9fff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .kpi-desc {
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+
+    /* ─── CTA Footer ─── */
+    .cta-footer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .cta-left {
+      padding: 80px 56px;
+      border-right: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-left::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 450px; height: 450px;
+      background: radial-gradient(circle, rgba(0,212,255,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .cta-heading {
+      font-family: var(--serif);
+      font-size: 58px;
+      line-height: 1.05;
+      letter-spacing: -2.5px;
+      color: var(--text);
+      margin-bottom: 36px;
+      position: relative;
+    }
+
+    .cta-heading em { font-style: italic; color: var(--cyan); }
+
+    .cta-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .cta-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border: 1px solid var(--border-lt);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      color: var(--dim);
+      transition: all 0.25s;
+    }
+
+    .cta-link:hover {
+      color: var(--text);
+      border-color: var(--cyan);
+      background: var(--cyan-dim);
+    }
+
+    .cta-link.primary {
+      background: var(--cyan);
+      color: #05080f;
+      border-color: var(--cyan);
+      font-weight: 500;
+    }
+
+    .cta-link.primary:hover {
+      background: var(--cyan-lt);
+      border-color: var(--cyan-lt);
+      color: #05080f;
+    }
+
+    .cta-right {
+      padding: 80px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .footer-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .footer-back {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--dim);
+      letter-spacing: 1px;
+      transition: color 0.2s;
+    }
+    .footer-back:hover { color: var(--cyan); }
+
+    .footer-sig {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-style: italic;
+      color: var(--dim);
+    }
+
+    /* ─── Reveal ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+      nav { padding: 18px 24px; }
+      .hero { padding: 60px 24px 0; }
+      .hero-tiles { display: none; }
+      .hero-main { grid-template-columns: 1fr; }
+      .hero-logo-col { align-items: flex-start; }
+      .hero-title { font-size: 80px; letter-spacing: -3px; }
+      .hero-bottom { flex-direction: column; gap: 28px; padding-bottom: 48px; }
+      .hero-meta { flex-direction: column; gap: 12px; }
+      .meta-block { text-align: left; }
+      .overview-strip { grid-template-columns: 1fr 1fr; }
+      .strip-item { padding: 24px; }
+      .signal-section { padding: 48px 24px; }
+      .signal-inner { grid-template-columns: 1fr; }
+      .signal-viz-col { display: none; }
+      .content, .features-section, .cta-footer, .kpi-section { grid-template-columns: 1fr; }
+      .content-left, .features-left { border-right: none; border-bottom: 1px solid var(--border); }
+      .kpi-item { border-right: none; border-bottom: 1px solid var(--border); }
+      .content-left, .content-right, .features-left, .features-right, .cta-left, .cta-right, .kpi-item { padding: 48px 24px; }
+      .tech-section { padding: 48px 24px; }
+      .tech-grid { grid-template-columns: repeat(2, 1fr); }
+      .cta-left { border-right: none; border-bottom: 1px solid var(--border); }
+      .cursor, .cursor-dot { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background elements -->
+  <div class="grid-bg"></div>
+  <div class="radar-orb"></div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <a href="index.html" class="nav-back">← Back</a>
+    <div class="nav-logo-wrap">
+      <img src="mosaic-logo.png" alt="Mosaic logo" class="nav-logo" />
+      <span class="nav-title">Mosaic</span>
+    </div>
+    <span class="nav-index">Project 01</span>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-tiles">
+      <div class="tile filled"></div>
+      <div class="tile"></div>
+      <div class="tile filled-blue"></div>
+      <div class="tile filled"></div>
+      <div class="tile"></div>
+      <div class="tile filled"></div>
+      <div class="tile filled-blue"></div>
+      <div class="tile"></div>
+      <div class="tile filled"></div>
+      <div class="tile filled-blue"></div>
+    </div>
+
+    <div class="hero-inner">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-tag">Privacy-First · UWB Telemetry</span>
+      </div>
+
+      <div class="hero-main">
+        <h1 class="hero-title">Mo<em>sa</em>ic</h1>
+        <div class="hero-logo-col">
+          <img src="mosaic-logo.png" alt="Mosaic Logo" class="hero-logo-large" />
+          <span class="hero-pill">Production-Grade</span>
+        </div>
+      </div>
+
+      <div class="hero-bottom">
+        <p class="hero-tagline">Privacy-first retail intelligence powered by Ultra-Wideband telemetry — no cameras, no faces, just centimeter-precise data.</p>
+        <div class="hero-meta">
+          <div class="meta-block">
+            <p class="meta-label">Role</p>
+            <p class="meta-value">Full-Stack & ML Engineer</p>
+          </div>
+          <div class="meta-block">
+            <p class="meta-label">Timeline</p>
+            <p class="meta-value">April 2026</p>
+          </div>
+          <div class="meta-block">
+            <p class="meta-label">Status</p>
+            <p class="meta-value">Production-Grade</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Overview Strip -->
+  <div class="overview-strip reveal">
+    <div class="strip-item">
+      <p class="strip-label">Platform Type</p>
+      <p class="strip-value">Retail Analytics<br/>Platform</p>
+    </div>
+    <div class="strip-item">
+      <p class="strip-label">Privacy Model</p>
+      <p class="strip-value">100% Anonymous<br/>Zero Optical Data</p>
+    </div>
+    <div class="strip-item">
+      <p class="strip-label">Positioning</p>
+      <p class="strip-value">Centimeter-Level<br/>UWB Accuracy</p>
+    </div>
+    <div class="strip-item">
+      <p class="strip-label">Architecture</p>
+      <p class="strip-value">Hybrid Electron-Flask<br/>+ PostgreSQL</p>
+    </div>
+  </div>
+
+  <!-- UWB Signal Viz Section -->
+  <div class="signal-section reveal">
+    <div class="signal-inner">
+      <div class="signal-text-col">
+        <p class="section-tag">UWB Telemetry</p>
+        <h2 class="signal-heading">Tracking without<br/><em>watching.</em></h2>
+        <p class="signal-body">Ultra-Wideband radio signals ping across the store floor at high frequency, triangulating anonymous tags to centimeter precision — all without capturing a single pixel of video or identifying a single person.</p>
+      </div>
+      <div class="signal-viz-col">
+        <div class="radar-wrap">
+          <div class="radar-ring"></div>
+          <div class="radar-ring"></div>
+          <div class="radar-ring"></div>
+          <div class="radar-ring"></div>
+          <div class="radar-center"></div>
+          <div class="blip"></div>
+          <div class="blip"></div>
+          <div class="blip"></div>
+          <div class="blip"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <div class="content-left reveal">
+      <p class="section-number">01 — Overview</p>
+      <h2 class="section-heading">Built for the<br/><em>physical world.</em></h2>
+      <p class="section-body">
+        Mosaic is an elite, production-grade retail analytics platform designed to transform physical store telemetry into high-precision, actionable business intelligence.
+      </p>
+      <p class="section-body">
+        Unlike invasive optical camera-based tracking systems, Mosaic leverages high-frequency Ultra-Wideband (UWB) radio telemetry to track anonymous customer trajectories at centimeter-level accuracy — fully safeguarding shopper privacy.
+      </p>
+      <div class="pull-quote">
+        <p>"Physical retail deserved the same <strong>intelligence layer</strong> that e-commerce has had for decades."</p>
+      </div>
+      <p class="section-body">
+        The result: dwell-time heatmaps, footfall patterns, zone conversion metrics, and real-time crowd density — delivered without capturing a single frame of video.
+      </p>
+    </div>
+    <div class="content-right reveal">
+      <p class="section-number">02 — The Problem</p>
+      <h2 class="section-heading">The <em>surveillance</em><br/>paradox.</h2>
+      <p class="section-body">
+        Modern retailers face a paradox: e-commerce platforms have granular session-level data on every click and scroll, while physical stores operate largely blind — relying on manual counts and gut instinct.
+      </p>
+      <p class="section-body">
+        Existing solutions almost universally use optical cameras with facial recognition or silhouette tracking. These carry enormous privacy risks, erode customer trust, and face growing legal restrictions across the globe.
+      </p>
+      <p class="section-body">
+        Mosaic closes this intelligence gap without crossing the privacy line. UWB radio signals can track movement to within a few centimeters, operating entirely in the abstract — no image, no identity, no risk.
+      </p>
+    </div>
+  </div>
+
+  <!-- KPI stats -->
+  <div class="kpi-section reveal">
+    <div class="kpi-item">
+      <p class="kpi-number cyan">&lt;5cm</p>
+      <p class="kpi-desc">UWB positioning accuracy</p>
+    </div>
+    <div class="kpi-item">
+      <p class="kpi-number blue">0</p>
+      <p class="kpi-desc">Optical data captured</p>
+    </div>
+    <div class="kpi-item">
+      <p class="kpi-number grad">∞</p>
+      <p class="kpi-desc">Privacy preserved events</p>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="tech-section reveal">
+    <div class="tech-header">
+      <h2 class="tech-title">Technology stack</h2>
+      <span class="tech-count">09 technologies</span>
+    </div>
+    <div class="tech-grid">
+      <div class="tech-item">
+        <p class="tech-category">Frontend</p>
+        <p class="tech-name">React.js</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-category">UI Layer</p>
+        <p class="tech-name">HTML / CSS / JS</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-category">Backend</p>
+        <p class="tech-name">Flask · Python</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-category">Server</p>
+        <p class="tech-name">Gunicorn</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-category">Database</p>
+        <p class="tech-name">PostgreSQL</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-category">Data Layer</p>
+        <p class="tech-name">Pandas</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-category">Machine Learning</p>
+        <p class="tech-name">scikit-learn</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-category">Telemetry</p>
+        <p class="tech-name">Ultra-Wideband</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-category">Runtime</p>
+        <p class="tech-name">Electron (Hybrid)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features-section">
+    <div class="features-left reveal">
+      <p class="section-number">03 — Capabilities</p>
+      <h2 class="section-heading">What <em>Mosaic</em><br/>delivers.</h2>
+    </div>
+    <div class="features-right">
+      <ul class="feature-list">
+        <li class="feature-item">
+          <span class="feature-num">01</span>
+          <p class="feature-text"><strong>UWB Trajectory Tracking</strong> — Centimeter-precision anonymous path mapping across the entire store floor, without any optical input.</p>
+        </li>
+        <li class="feature-item">
+          <span class="feature-num">02</span>
+          <p class="feature-text"><strong>Dwell-Time Heatmaps</strong> — Spatial-temporal K-Means clustering to surface high and low engagement zones across any store layout.</p>
+        </li>
+        <li class="feature-item">
+          <span class="feature-num">03</span>
+          <p class="feature-text"><strong>POS Data Fusion</strong> — Sensor data blended with point-of-sale transactions to correlate foot traffic with actual conversion events.</p>
+        </li>
+        <li class="feature-item">
+          <span class="feature-num">04</span>
+          <p class="feature-text"><strong>Real-Time Crowd Density</strong> — Live crowd load monitoring with configurable thresholds and alerting for store capacity management.</p>
+        </li>
+        <li class="feature-item">
+          <span class="feature-num">05</span>
+          <p class="feature-text"><strong>Offline-Fallback LLM Engine</strong> — Structured narrative generation from KPI data, operational even without internet connectivity.</p>
+        </li>
+        <li class="feature-item">
+          <span class="feature-num">06</span>
+          <p class="feature-text"><strong>Privacy-First Architecture</strong> — Zero optical data. No faces, no identities. Full GDPR and privacy regulation alignment by design.</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CTA Footer -->
+  <div class="cta-footer">
+    <div class="cta-left reveal">
+      <h2 class="cta-heading">Read the<br/>full <em>write-up.</em></h2>
+      <div class="cta-links">
+        <a href="https://github.com/N1ranjann/Mosaic-writeup" target="_blank" rel="noopener noreferrer" class="cta-link primary">
+          View on GitHub ↗
+        </a>
+        <a href="index.html" class="cta-link">
+          ← All Projects
+        </a>
+      </div>
+    </div>
+    <div class="cta-right">
+      <div class="footer-meta">
+        <a href="index.html" class="footer-back">← All Projects</a>
+        <span class="footer-sig">Designed &amp; built by Niranjan, 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Scripts -->
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script>
+    // Initialize Lenis Smooth Scroll
+    const lenis = new Lenis();
+    
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    
+    requestAnimationFrame(raf);
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          lenis.scrollTo(target);
+        }
+      });
+    });
+
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const dot = document.getElementById('cursorDot');
+    let cx = 0, cy = 0, tx = 0, ty = 0;
+
+    document.addEventListener('mousemove', e => {
+      tx = e.clientX; ty = e.clientY;
+      dot.style.left = tx + 'px';
+      dot.style.top = ty + 'px';
+    });
+
+    function animateCursor() {
+      cx += (tx - cx) * 0.12;
+      cy += (ty - cy) * 0.12;
+      cursor.style.left = cx + 'px';
+      cursor.style.top = cy + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '40px';
+        cursor.style.height = '40px';
+        cursor.style.background = 'rgba(0,212,255,0.08)';
+        cursor.style.borderColor = 'var(--cyan)';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '20px';
+        cursor.style.height = '20px';
+        cursor.style.background = 'transparent';
+        cursor.style.borderColor = 'var(--cyan)';
+      });
+    });
+
+    // Scroll reveal
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.07, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // Staggered feature items
+    const featureIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.querySelectorAll('.feature-item').forEach((item, i) => {
+            setTimeout(() => item.classList.add('active'), i * 100);
+          });
+          featureIO.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.features-right').forEach(el => featureIO.observe(el));
+  </script>
+</body>
+</html>
