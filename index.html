@@ -888,6 +888,222 @@
     .pagination-bar.active {
       background: var(--gold);
     }
+
+    /* ─── Responsive Mobile Overrides ───────────────────────── */
+    @media (max-width: 768px) {
+      nav {
+        padding: 16px 20px;
+      }
+      
+      nav .nav-name {
+        font-size: 20px;
+      }
+
+      nav .nav-right {
+        gap: 16px;
+      }
+      
+      nav .nav-links {
+        gap: 16px;
+      }
+
+      nav .nav-links a {
+        font-size: 11px;
+        letter-spacing: 1px;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 60px 20px 40px;
+        min-height: auto;
+        gap: 24px;
+        align-items: flex-start;
+      }
+
+      .hero-left .hero-label {
+        margin-bottom: 16px;
+      }
+
+      .hero-heading {
+        font-size: 36px;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+      }
+
+      .hero-right {
+        padding-left: 0;
+        gap: 20px;
+      }
+
+      .hero-desc {
+        max-width: 100%;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .cta-btn {
+        padding: 12px 24px;
+        font-size: 12px;
+        letter-spacing: 1.2px;
+      }
+
+      .about {
+        grid-template-columns: 1fr;
+      }
+
+      .about-left {
+        padding: 48px 20px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-dd);
+      }
+
+      .about-right {
+        padding: 48px 20px;
+      }
+
+      .about-bio {
+        font-size: 20px;
+        line-height: 1.5;
+      }
+
+      .about-bio-witty {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-top: 18px;
+      }
+
+      .about-identity {
+        margin-bottom: 24px;
+        gap: 14px;
+      }
+
+      .memoji-wrap {
+        width: 80px;
+        height: 80px;
+      }
+
+      .identity-text .id-name {
+        font-size: 22px;
+      }
+
+      .identity-text .id-role {
+        font-size: 11px;
+        letter-spacing: 1.2px;
+      }
+
+      .stack-table td {
+        font-size: 13px;
+        padding: 8px 0;
+      }
+
+      .stack-table .cat {
+        width: 90px;
+      }
+
+      .projects {
+        padding: 48px 20px;
+      }
+
+      .projects-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+        margin-bottom: 24px;
+      }
+
+      .projects-header .proj-title {
+        font-size: 28px;
+      }
+
+      .proj-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 16px 8px;
+        margin: 0;
+      }
+
+      .proj-row:first-child {
+        border-top: 1px solid var(--border-d);
+      }
+
+      .proj-index {
+        display: none;
+      }
+
+      .proj-name {
+        font-size: 20px;
+      }
+
+      .proj-badge {
+        margin-left: 8px;
+        font-size: 9px;
+      }
+
+      .proj-stack {
+        font-size: 13px;
+      }
+
+      .proj-year {
+        font-size: 13px;
+        color: var(--dim);
+      }
+
+      .design {
+        padding: 48px 20px;
+      }
+
+      .design-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 24px;
+      }
+
+      .design-header .des-title {
+        font-size: 28px;
+      }
+
+      .contact {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-left {
+        padding: 48px 20px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-dd);
+      }
+
+      .contact-right {
+        padding: 48px 20px;
+      }
+
+      .contact-heading {
+        font-size: 32px;
+        line-height: 1.15;
+      }
+
+      .contact-desc {
+        font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 24px;
+      }
+
+      .contact-email, .contact-phone {
+        font-size: 16px;
+      }
+
+      .footer-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .footer-copy, .footer-intent {
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1314,6 +1530,40 @@
         
         if (metaName) {
           metaName.textContent = defaultName;
+        }
+      });
+
+      // Tapping cycles images on mobile/touch screens
+      cell.addEventListener('click', () => {
+        if (window.matchMedia('(max-width: 768px)').matches) {
+          const numImages = images.length;
+          if (numImages === 0) return;
+          const activeIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
+          const nextIndex = (activeIndex + 1) % numImages;
+          
+          images.forEach((img, idx) => {
+            if (idx === nextIndex) {
+              img.classList.add('active');
+            } else {
+              img.classList.remove('active');
+            }
+          });
+          
+          bars.forEach((bar, idx) => {
+            if (idx === nextIndex) {
+              bar.classList.add('active');
+            } else {
+              bar.classList.remove('active');
+            }
+          });
+
+          if (metaName) {
+            if (nextIndex === 0) {
+              metaName.textContent = defaultName;
+            } else {
+              metaName.textContent = `${defaultName} (Mockup ${nextIndex})`;
+            }
+          }
         }
       });
     });
